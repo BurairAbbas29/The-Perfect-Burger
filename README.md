@@ -36,3 +36,7 @@ npm run dev
 Because it relies entirely on Vite and static client-side rendering for its scroll physics, deploying this app requires zero heavy lifting.
 
 Simply import your repository into **Vercel** and deploy using the standard Vite presets. It is optimized to perform flawlessly on edge networks.
+
+---
+
+*Disclaimer: [Claude Code](https://claude.ai) was used as an autonomous engineering assistant to help architect, design, and program this website.*
