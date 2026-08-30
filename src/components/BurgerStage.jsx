@@ -44,10 +44,24 @@ export default function BurgerStage({ stage, index }) {
   
   const [droppedItem, setDroppedItem] = useState(null);
   const [nastyPhrase, setNastyPhrase] = useState("");
+  const [lastMessageIndex, setLastMessageIndex] = useState(null);
 
   const { isOver, setNodeRef: setDroppableRef } = useDroppable({
     id: `drop-${stage.id}`,
   });
+
+  const getNextNastyMessage = () => {
+    let nextIndex = Math.floor(Math.random() * NASTY_MESSAGES.length);
+
+    if (NASTY_MESSAGES.length > 1) {
+      while (nextIndex === lastMessageIndex) {
+        nextIndex = Math.floor(Math.random() * NASTY_MESSAGES.length);
+      }
+    }
+
+    setLastMessageIndex(nextIndex);
+    setNastyPhrase(NASTY_MESSAGES[nextIndex]);
+  };
 
   useGSAP(() => {
     const tl = gsap.timeline({
@@ -72,8 +86,7 @@ export default function BurgerStage({ stage, index }) {
           if (ingredientData.type === 'correct') {
             window.dispatchEvent(new CustomEvent('ingredient-placed', { detail: ingredientData.id }));
           } else {
-            // Randomize from the unhinged list
-            setNastyPhrase(NASTY_MESSAGES[Math.floor(Math.random() * NASTY_MESSAGES.length)]);
+            getNextNastyMessage();
           }
         }
       }
