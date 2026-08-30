@@ -1,7 +1,16 @@
 import React, { useRef, useState } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
-import { DndContext, useDraggable, useDroppable, DragOverlay, closestCenter } from '@dnd-kit/core';
+import { 
+  DndContext, 
+  useDraggable, 
+  useDroppable, 
+  DragOverlay, 
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors
+} from '@dnd-kit/core';
 
 function DraggableIngredient({ ingredient }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
@@ -30,6 +39,14 @@ export default function BurgerStage({ stage, index }) {
   const [activeId, setActiveId] = useState(null);
 
   const activeIngredient = activeId ? stage.options.find(opt => opt.id === activeId) : null;
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // Requires an 8px movement before drag is locked in, filtering out clicks on scrollable pages
+      },
+    })
+  );
 
   const { isOver, setNodeRef: setDroppableRef } = useDroppable({
     id: `drop-${stage.id}`,
@@ -75,7 +92,7 @@ export default function BurgerStage({ stage, index }) {
           {index + 1}. {stage.title}
         </h2>
 
-        <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
+        <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
           {!completed ? (
             <div className={`mt-12 flex flex-wrap gap-4 ingredient-opt-${index}`}>
               {stage.options.map((opt) => (

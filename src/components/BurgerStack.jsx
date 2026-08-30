@@ -31,13 +31,19 @@ export default function BurgerStack({ stages }) {
   const ITEM_STYLES = {
     'bottom-bun': 'bg-amber-600 rounded-b-[40px] rounded-t-lg h-16 w-64 shadow-xl',
     'smashed-patty': 'bg-red-950 rounded-xl h-10 w-64 shadow-[inset_0_-4px_0_rgba(0,0,0,0.6)] my-[-4px]',
-    'american-cheese': 'bg-yellow-400 rounded h-4 w-72 transform rotate-2 my-[-8px] shadow-lg',
+    'american-cheese': 'bg-yellow-400 rounded h-4 w-72 transform rotate-2 my-[-8px] shadow-[0_4px_10px_rgba(250,204,21,0.3)]',
+    'onions-pickles': 'bg-green-700/80 rounded-sm h-6 w-60 border-dashed border-2 border-green-900 my-[-6px] shadow-lg flex items-center justify-center',
+    'house-sauce': 'bg-orange-500 rounded-full h-8 w-56 opacity-95 blur-[1px] my-[-10px]',
+    'top-bun': 'bg-amber-600 rounded-t-[60px] rounded-b-md h-24 w-64 shadow-inner my-[-5px]',
   };
 
   const ITEM_LABELS = {
     'bottom-bun': 'Toasted Bottom Bun',
     'smashed-patty': 'Smashed Beef Patty',
     'american-cheese': 'American Cheese',
+    'onions-pickles': 'Onions & Pickles',
+    'house-sauce': 'House Sauce',
+    'top-bun': 'Sesame Top Bun',
   };
 
   return (
@@ -55,7 +61,9 @@ export default function BurgerStack({ stages }) {
               className={`stack-item-${item} ${ITEM_STYLES[item]} flex flex-col items-center justify-center border border-black/20 relative backdrop-blur-sm`}
               style={{ zIndex: i }}
             >
-              <div className="font-heading font-black text-black/40 text-sm uppercase tracking-widest">{ITEM_LABELS[item]}</div>
+              <div className={`font-heading font-black text-sm uppercase tracking-widest ${item === 'american-cheese' || item === 'house-sauce' ? 'text-black/60' : 'text-black/40'}`}>
+                {ITEM_LABELS[item]}
+              </div>
             </div>
           ))}
        </div>

@@ -41,6 +41,39 @@ const STAGES = [
       { id: 'american-cheese', name: 'American Cheese', type: 'correct' },
       { id: 'swiss-cheese', name: 'Swiss Cheese', type: 'wrong' },
     ]
+  },
+  {
+    id: 'crunch',
+    title: 'The Crunch',
+    correctIngredient: 'onions-pickles',
+    explanation: 'A balanced combination of sharp diced onions and acidic pickles slices through the heavy fat profile of the beef and cheese.',
+    options: [
+      { id: 'tomato', name: 'Thick Tomatoes', type: 'wrong' },
+      { id: 'ketchup', name: 'Ketchup', type: 'wrong' },
+      { id: 'onions-pickles', name: 'Onions & Pickles', type: 'correct' },
+    ]
+  },
+  {
+    id: 'sauce',
+    title: 'The Zest',
+    correctIngredient: 'house-sauce',
+    explanation: 'A creamy, tangy house sauce provides the necessary moisture and flavor bridge that brings every other element into perfect harmony.',
+    options: [
+      { id: 'house-sauce', name: 'House Sauce', type: 'correct' },
+      { id: 'mustard', name: 'Diet Mustard', type: 'wrong' },
+      { id: 'bbq', name: 'Heavy BBQ', type: 'wrong' },
+    ]
+  },
+  {
+    id: 'top-bun',
+    title: 'The Crown',
+    correctIngredient: 'top-bun',
+    explanation: 'A soft, toasted crown seals the experience. The perfect vessel to deliver culinary supremacy to your palate.',
+    options: [
+      { id: 'lettuce-wrap', name: 'Lettuce Wrap', type: 'wrong' },
+      { id: 'top-bun', name: 'Sesame Top Bun', type: 'correct' },
+      { id: 'toast', name: 'Sourdough Toast', type: 'wrong' },
+    ]
   }
 ];
 
