@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import gsap from ' gsap';
+import gsap from 'gsap';
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
