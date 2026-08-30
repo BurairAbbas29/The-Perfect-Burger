@@ -7,10 +7,10 @@ function SortableIngredient({ id, styleClass, label, inlineStyles }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
 
   const style = {
+    ...inlineStyles,
     transform: CSS.Transform.toString(transform),
     transition: transition || 'transform 250ms cubic-bezier(0.2, 0, 0, 1)',
-    zIndex: isDragging ? 99 : undefined,
-    ...inlineStyles,
+    ...(isDragging ? { zIndex: 999 } : {})
   };
 
   return (
@@ -38,7 +38,7 @@ export default function BurgerStack() {
     const handleAdd = (e) => {
       const ingredientId = e.detail;
       setStack(prev => {
-        if (!prev.includes(ingredientId)) return [ingredientId, ...prev];
+        if (!prev.includes(ingredientId)) return [ingredientId, ...prev]; // Drop on top
         return prev;
       });
     };
@@ -84,17 +84,16 @@ export default function BurgerStack() {
     }
   }, [stack.length]);
 
-  // Hyper-Realistic Premium CSS styling replacing the old flat basic block shapes
+  // FIXED DIMENSIONS: Converted all % widths to absolute px to prevent complete structural collapse
   const ITEM_STYLES = {
-    'toasted-bun': 'bg-gradient-to-b from-[#df933b] to-[#a35e16] rounded-b-[70px] rounded-t-[10px] h-20 w-64 shadow-[inset_0_-20px_20px_rgba(100,40,0,0.9),inset_0_10px_10px_rgba(255,255,255,0.2)]',
-    'smashed-patty': 'bg-[#3b170c] rounded-2xl h-14 w-[105%] shadow-[inset_0_10px_15px_rgba(0,0,0,0.8),inset_0_-5px_5px_rgba(255,255,255,0.05),0_10px_10px_rgba(0,0,0,0.6)] border border-[#230d06]',
-    'american-cheese': 'bg-gradient-to-br from-[#ffe100] to-[#e69b00] rounded-md h-6 w-[108%] transform rotate-2 shadow-[0_5px_15px_rgba(245,158,11,0.6),inset_0_-2px_10px_rgba(210,120,0,0.6)]',
-    'onions-pickles': 'bg-gradient-to-r from-green-500 to-green-700 rounded-lg h-5 w-60 border-t border-green-400 shadow-[inset_0_4px_8px_rgba(0,0,0,0.3),0_5px_10px_rgba(0,0,0,0.5)]',
-    'house-sauce': 'bg-[#f06424] rounded-[50%] h-8 w-[102%] opacity-90 blur-[1px] shadow-[0_10px_20px_rgba(220,60,10,0.7),inset_0_5px_10px_rgba(255,200,100,0.4)]',
-    'top-bun': 'bg-gradient-to-b from-[#dba357] to-[#ba6813] rounded-t-[100px] rounded-b-[15px] h-32 w-64 shadow-[inset_0_20px_30px_rgba(255,255,255,0.3),inset_0_-15px_25px_rgba(110,45,0,0.7)]',
+    'toasted-bun': 'bg-gradient-to-b from-[#df933b] to-[#a35e16] rounded-b-[70px] rounded-t-[10px] h-20 w-[256px] shadow-[inset_0_-20px_20px_rgba(100,40,0,0.9),inset_0_10px_10px_rgba(255,255,255,0.2)]',
+    'smashed-patty': 'bg-[#3b170c] rounded-2xl h-14 w-[268px] shadow-[inset_0_10px_15px_rgba(0,0,0,0.8),inset_0_-5px_5px_rgba(255,255,255,0.05),0_10px_10px_rgba(0,0,0,0.6)] border border-[#230d06]',
+    'american-cheese': 'bg-gradient-to-br from-[#ffe100] to-[#e69b00] rounded-md h-6 w-[276px] transform rotate-2 shadow-[0_5px_15px_rgba(245,158,11,0.6),inset_0_-2px_10px_rgba(210,120,0,0.6)]',
+    'onions-pickles': 'bg-gradient-to-r from-green-500 to-green-700 rounded-lg h-5 w-[240px] border-t border-green-400 shadow-[inset_0_4px_8px_rgba(0,0,0,0.3),0_5px_10px_rgba(0,0,0,0.5)]',
+    'house-sauce': 'bg-[#f06424] rounded-[50%] h-8 w-[260px] opacity-90 blur-[1px] shadow-[0_10px_20px_rgba(220,60,10,0.7),inset_0_5px_10px_rgba(255,200,100,0.4)]',
+    'top-bun': 'bg-gradient-to-b from-[#dba357] to-[#ba6813] rounded-t-[100px] rounded-b-[15px] h-32 w-[256px] shadow-[inset_0_20px_30px_rgba(255,255,255,0.3),inset_0_-15px_25px_rgba(110,45,0,0.7)]',
   };
 
-  // Adding dynamic inline sesame seeds style directly to top bun
   const ITEM_INLINE = {
     'toasted-bun': { zIndex: 10 },
     'smashed-patty': { zIndex: 20 },
@@ -124,7 +123,6 @@ export default function BurgerStack() {
               ))}
            </SortableContext>
            
-           {/* Hyper-Realistic 3D Platter/Plate */}
            <div className="w-[450px] h-14 bg-gradient-to-b from-zinc-200 to-zinc-400 rounded-[100%] shadow-[0_45px_70px_rgba(0,0,0,0.7)] relative border-b-[8px] border-zinc-500 z-0 flex items-center justify-center mt-[-15px]">
               <div className="absolute w-[80%] h-[75%] bg-gradient-to-br from-zinc-300 to-zinc-100 rounded-[100%] shadow-[inset_0_12px_20px_rgba(0,0,0,0.15)] flex items-center justify-center border border-white/50">
                  <div className="w-[70%] h-[60%] bg-zinc-300/40 rounded-[100%] shadow-[inset_0_5px_15px_rgba(0,0,0,0.1)] border border-black/5"></div>
@@ -133,7 +131,7 @@ export default function BurgerStack() {
        </div>
 
        {stack.length === 6 && (
-         <div data-html2canvas-ignore="true" className="absolute top-1/4 right-8 flex flex-col items-end gap-2 pr-8 animate-in fade-in slide-in-from-right-10 duration-1000 delay-1000 text-orange-400 font-heading font-black tracking-[0.2em] pointer-events-none drop-shadow-xl">
+         <div data-html2canvas-ignore="true" className="absolute top-1/4 right-8 flex flex-col items-end gap-2 pr-8 animate-in fade-in slide-in-from-right-10 duration-1000 delay-1000 text-orange-400 font-heading font-black tracking-[0.2em] pointer-events-none drop-shadow-xl z-50">
            <div className="animate-pulse">↓ IT'S FULLY INTERACTIVE ↓</div>
            <div className="text-zinc-400 text-sm tracking-wide">Drag layers to re-arrange your masterpiece</div>
          </div>
