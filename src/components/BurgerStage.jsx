@@ -3,18 +3,18 @@ import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { useDraggable, useDroppable } from '@dnd-kit/core';
 
-// Max-level Savage Insults
+// R-Rated, Unhinged Ramsay-Level Insults
 const NASTY_MESSAGES = [
-  "Your bloodline is weak and your palate is a biological failure.",
-  "I wouldn't feed this to a starving feral pig.",
-  "You are an absolute waste of carbon.",
-  "Even a lobotomized toddler makes better culinary decisions.",
-  "You absolute donkey.",
-  "This is why your parents change the subject when people ask about you.",
-  "You're a pathogen to the culinary arts.",
-  "Congratulations, you just ruined a perfectly good digital meal.",
-  "I hope you step on a Lego in the dark for making this choice.",
-  "Are you actively trying to be this incompetent?"
+  "Are you a fucking idiot? My dead grandmother has better taste.",
+  "You absolute useless sack of shit. What the fuck is this?",
+  "This is a culinary abortion. Get the fuck out of my kitchen.",
+  "I wouldn't feed this rancid garbage to a fucking disease-ridden rat.",
+  "Your bloodline is weak, your palate is a biological failure, and you're a fucking disaster.",
+  "Did you suffer a traumatic brain injury before building this? Jesus fucking Christ.",
+  "You are a goddamn pathogen to the culinary arts. Disgusting.",
+  "This makes me want to drink bleach and set myself on fucking fire.",
+  "You ignorant fuck. How do you even put your pants on in the morning without choking?",
+  "Congratulations, you just shat all over a perfectly good digital meal."
 ];
 
 function DraggableIngredient({ ingredient }) {
@@ -70,6 +70,7 @@ export default function BurgerStage({ stage, index }) {
           if (ingredientData.type === 'correct') {
             window.dispatchEvent(new CustomEvent('ingredient-placed', { detail: ingredientData.id }));
           } else {
+            // Randomize from the unhinged list
             setNastyPhrase(NASTY_MESSAGES[Math.floor(Math.random() * NASTY_MESSAGES.length)]);
           }
         }
@@ -105,13 +106,13 @@ export default function BurgerStage({ stage, index }) {
             <div className="mt-10 bg-red-950/30 border-l-4 border-red-600 p-8 rounded-2xl backdrop-blur-xl shadow-2xl flex flex-col items-start gap-4 animate-in fade-in zoom-in-95 duration-500 ease-out">
               <h3 className="font-heading font-black text-4xl md:text-5xl text-red-500 drop-shadow-xl">{nastyPhrase}</h3>
               <p className="text-zinc-300 text-xl leading-relaxed mt-2">
-                Who in their right mind puts <strong className="text-red-400 underline decoration-red-500/30">{droppedItem.name}</strong> on a masterpiece?
+                Who in their right fucking mind puts <strong className="text-red-400 underline decoration-red-500/30">{droppedItem.name}</strong> on a masterpiece?
               </p>
               <button 
                 onClick={() => setDroppedItem(null)} 
                 className="px-8 py-3 bg-red-600/90 hover:bg-red-500 text-white font-bold rounded-lg mt-6 shadow-[0_0_20px_rgba(220,38,38,0.4)] transition-all hover:scale-105 active:scale-95"
               >
-                I repent. Let me try again.
+                I am a fucking idiot. Let me try again.
               </button>
             </div>
           )
