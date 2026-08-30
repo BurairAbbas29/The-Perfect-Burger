@@ -3,15 +3,18 @@ import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { useDraggable, useDroppable } from '@dnd-kit/core';
 
+// Max-level Savage Insults
 const NASTY_MESSAGES = [
-  "You disgusting animal.",
-  "You vile creature.",
-  "An absolute culinary war crime.",
-  "Gordon Ramsay is weeping.",
-  "Are you out of your mind?",
-  "You possess the palate of a raccoon.",
-  "An affront to gastronomy.",
-  "Please leave the kitchen immediately."
+  "Your bloodline is weak and your palate is a biological failure.",
+  "I wouldn't feed this to a starving feral pig.",
+  "You are an absolute waste of carbon.",
+  "Even a lobotomized toddler makes better culinary decisions.",
+  "You absolute donkey.",
+  "This is why your parents change the subject when people ask about you.",
+  "You're a pathogen to the culinary arts.",
+  "Congratulations, you just ruined a perfectly good digital meal.",
+  "I hope you step on a Lego in the dark for making this choice.",
+  "Are you actively trying to be this incompetent?"
 ];
 
 function DraggableIngredient({ ingredient }) {
@@ -37,7 +40,6 @@ function DraggableIngredient({ ingredient }) {
 export default function BurgerStage({ stage, index }) {
   const stageRef = useRef();
   
-  // Track what was dropped here
   const [droppedItem, setDroppedItem] = useState(null);
   const [nastyPhrase, setNastyPhrase] = useState("");
 
@@ -101,7 +103,7 @@ export default function BurgerStage({ stage, index }) {
             </div>
           ) : (
             <div className="mt-10 bg-red-950/30 border-l-4 border-red-600 p-8 rounded-2xl backdrop-blur-xl shadow-2xl flex flex-col items-start gap-4 animate-in fade-in zoom-in-95 duration-500 ease-out">
-              <h3 className="font-heading font-black text-5xl text-red-500 drop-shadow-xl">{nastyPhrase}</h3>
+              <h3 className="font-heading font-black text-4xl md:text-5xl text-red-500 drop-shadow-xl">{nastyPhrase}</h3>
               <p className="text-zinc-300 text-xl leading-relaxed mt-2">
                 Who in their right mind puts <strong className="text-red-400 underline decoration-red-500/30">{droppedItem.name}</strong> on a masterpiece?
               </p>

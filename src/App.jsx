@@ -2,6 +2,8 @@ import React, { useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
+import html2canvas from 'html2canvas';
+
 import { 
   DndContext, 
   DragOverlay, 
@@ -88,8 +90,10 @@ const STAGES = [
 
 export default function App() {
   const container = useRef();
+  
   const [activeId, setActiveId] = useState(null);
   const [activeIsSortable, setActiveIsSortable] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
   
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -140,6 +144,54 @@ export default function App() {
     document.getElementById('stage-0')?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const handleShare = async () => {
+    setIsSharing(true);
+    try {
+      const stackElement = document.getElementById('capture-burger');
+      if (!stackElement) return;
+
+      // Force GSAP transforms to snapshot correctly
+      const canvas = await html2canvas(stackElement, {
+        backgroundColor: '#09090b',
+        scale: 2,
+        useCORS: true,
+      });
+
+      const dataUrl = canvas.toDataURL('image/png');
+      const blob = await (await fetch(dataUrl)).blob();
+      const file = new File([blob], 'my-perfect-burger.png', { type: 'image/png' });
+      
+      const shareData = {
+        title: 'Perfect Burger Builder',
+        text: 'I just engineered the ultimate burger stack. Taste my culinary supremacy:',
+        url: window.location.href,
+        files: [file]
+      };
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback for desktop: Trigger download and copy link
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = 'my-perfect-burger.png';
+        a.click();
+        
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Burger screenshot downloaded & Site link copied to clipboard!');
+      }
+    } catch (e) {
+      console.error("Screenshot failed:", e);
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Link copied to clipboard! (Screenshot failed on this device)');
+      } catch (err) {
+        alert('Could not copy link automatically.');
+      }
+    }
+    setIsSharing(false);
+  };
+
   const activeIngredient = getActiveIngredient();
 
   return (
@@ -160,14 +212,17 @@ export default function App() {
           ))}
         </div>
 
-        {/* Global Stack */}
         <BurgerStack stages={STAGES} />
 
         <footer className="w-full py-48 bg-zinc-900 flex flex-col items-center justify-center text-center px-4 z-20 relative border-t border-zinc-800">
           <h2 className="font-heading font-black text-6xl md:text-8xl mb-8 uppercase">Bon Appétit</h2>
           <p className="text-zinc-400 max-w-lg mb-12 text-xl leading-relaxed">You have constructed the perfect burger based on culinary science and ruthless engineering.</p>
-          <button className="px-8 py-4 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-full text-xl transition-all hover:scale-105">
-            Share Your Masterpiece
+          <button 
+            onClick={handleShare}
+            disabled={isSharing}
+            className={`px-8 py-4 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-full text-xl transition-all ${isSharing ? 'opacity-50 scale-95' : 'hover:scale-105 shadow-[0_0_20px_rgba(234,88,12,0.4)]'}`}
+          >
+            {isSharing ? 'Capturing Burger...' : 'Share Your Masterpiece'}
           </button>
         </footer>
       </main>

@@ -63,7 +63,7 @@ export default function BurgerStack() {
   // Premium Elastic Drop Physics
   useEffect(() => {
     if (stack.length > 0) {
-      const latest = stack[0]; // because we prepend [ingredientId, ...prev]
+      const latest = stack[0]; 
       gsap.fromTo(`.stack-item-${latest}`,
         { y: -800, scale: 0.8, opacity: 0, rotationX: 60, rotationZ: gsap.utils.random(-20, 20) },
         { y: 0, scale: 1, opacity: 1, rotationX: 0, rotationZ: 0, duration: 2, ease: 'elastic.out(1, 0.4)' }
@@ -104,7 +104,7 @@ export default function BurgerStack() {
   };
 
   return (
-    <div className="fixed top-0 right-0 w-full md:w-1/2 h-screen pointer-events-none z-40 flex flex-col justify-end items-center pb-24" style={{ perspective: '1200px' }}>
+    <div id="capture-burger" className="fixed top-0 right-0 w-full md:w-1/2 h-screen pointer-events-none z-40 flex flex-col justify-end items-center pb-24" style={{ perspective: '1200px' }}>
        
        <div ref={wrapperRef} className="relative flex flex-col items-center pointer-events-auto transform-gpu transition-transform" style={{ transformStyle: 'preserve-3d' }}>
            
@@ -123,7 +123,7 @@ export default function BurgerStack() {
        </div>
 
        {stack.length === 6 && (
-         <div className="absolute top-1/4 right-8 flex flex-col items-end gap-2 pr-8 animate-in fade-in slide-in-from-right-10 duration-1000 delay-1000 text-orange-400 font-heading font-black tracking-[0.2em] pointer-events-none drop-shadow-xl">
+         <div className="absolute top-1/4 right-8 flex flex-col items-end gap-2 pr-8 animate-in fade-in slide-in-from-right-10 duration-1000 delay-1000 text-orange-400 font-heading font-black tracking-[0.2em] pointer-events-none drop-shadow-xl" data-html2canvas-ignore>
            <div className="animate-pulse">↓ IT'S FULLY INTERACTIVE ↓</div>
            <div className="text-zinc-400 text-sm tracking-wide">Drag layers to re-arrange your masterpiece</div>
          </div>
