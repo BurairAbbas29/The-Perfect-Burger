@@ -15,7 +15,7 @@ const NASTY_MESSAGES = [
   "This makes me want to drink bleach and set myself on fucking fire.",
   "You ignorant fuck. How do you even put your pants on in the morning without choking?",
   "Congratulations, you just shat all over a perfectly good digital meal.",
-  "I hope you fucking choke on this abomination and die!.",
+  "I hope you fucking choke on this abomination and die!",
   "Your parents should never have given birth to a RETARD like YOU!"
 ];
 
