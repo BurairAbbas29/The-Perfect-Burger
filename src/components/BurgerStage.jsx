@@ -14,7 +14,8 @@ const NASTY_MESSAGES = [
   "You are a goddamn pathogen to the culinary arts. Disgusting.",
   "This makes me want to drink bleach and set myself on fucking fire.",
   "You ignorant fuck. How do you even put your pants on in the morning without choking?",
-  "Congratulations, you just shat all over a perfectly good digital meal."
+  "Congratulations, you just shat all over a perfectly good digital meal.",
+  "I hope you fucking choke on this abomination and die!."
 ];
 
 function DraggableIngredient({ ingredient }) {
