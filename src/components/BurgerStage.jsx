@@ -49,17 +49,13 @@ export default function BurgerStage({ stage, index }) {
   useEffect(() => {
     const handleGlobalDrop = (e) => {
       const { dropzoneId, ingredientData, ingredientId } = e.detail;
-      
-      // Ensure the dropped location belongs to this stage
       if (dropzoneId === `drop-${stage.id}`) {
-        // Ensure the dragged ingredient belongs to this stage
         if (ingredientData.stageId === stage.id && ingredientData.type === 'correct') {
           setCompleted(true);
           setErrorObj(null);
-          // Play central success event for BurgerStack
-          window.dispatchEvent(new CustomEvent('ingredient-placed', { detail: stage.id }));
+          // Pass the unique ingredientID that matches our STYLING mapping
+          window.dispatchEvent(new CustomEvent('ingredient-placed', { detail: ingredientData.id }));
         } else {
-          // Wrong choice or wrong stage item
           setErrorObj(ingredientId);
           setTimeout(() => setErrorObj(null), 1000);
         }

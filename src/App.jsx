@@ -80,17 +80,16 @@ const STAGES = [
     explanation: 'A soft, toasted crown seals the experience. The perfect vessel to deliver culinary supremacy to your palate.',
     options: [
       { id: 'lettuce-wrap', name: 'Lettuce Wrap', type: 'wrong', stageId: 'top-bun' },
-      { id: 'top-bun', name: 'Sesame Top Bun', type: 'correct', stageId: 'top-bun' },
       { id: 'toast', name: 'Sourdough Toast', type: 'wrong', stageId: 'top-bun' },
+      { id: 'top-bun', name: 'Sesame Top Bun', type: 'correct', stageId: 'top-bun' },
     ]
   }
 ];
 
 export default function App() {
   const container = useRef();
-  
-  // Lifted DnD state
   const [activeId, setActiveId] = useState(null);
+  const [activeIsSortable, setActiveIsSortable] = useState(false);
   
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -111,13 +110,21 @@ export default function App() {
 
   const handleDragStart = (event) => {
     setActiveId(event.active.id);
+    setActiveIsSortable(!!event.active.data.current?.sortable);
   };
 
   const handleDragEnd = (event) => {
     const { over, active } = event;
     setActiveId(null);
+    setActiveIsSortable(false);
     
-    // Dispatch a global event so the specific stage can catch it and handle success/error states
+    if (active.data.current?.sortable) {
+      if (over && active.id !== over.id) {
+        window.dispatchEvent(new CustomEvent('stack-sorted', { detail: { active, over } }));
+      }
+      return;
+    }
+
     if (over) {
       window.dispatchEvent(new CustomEvent('global-ingredient-dropped', { 
         detail: { 
@@ -137,7 +144,7 @@ export default function App() {
 
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
-      <main className="w-full min-h-screen bg-zinc-950 text-white font-sans overflow-x-hidden" ref={container}>
+      <main className="w-full min-h-[100vh] bg-zinc-950 text-white font-sans overflow-x-hidden" ref={container}>
         <nav className="fixed top-0 w-full z-50 p-6 flex justify-between items-center mix-blend-difference pointer-events-none">
           <div className="font-heading font-bold text-xl tracking-tighter">PERFECT.BURGER</div>
           <button onClick={scrollToStart} className="pointer-events-auto px-5 py-2.5 bg-white text-black rounded-full font-medium text-sm hover:scale-105 transition-transform duration-300">
@@ -153,6 +160,7 @@ export default function App() {
           ))}
         </div>
 
+        {/* Global Stack */}
         <BurgerStack stages={STAGES} />
 
         <footer className="w-full py-48 bg-zinc-900 flex flex-col items-center justify-center text-center px-4 z-20 relative border-t border-zinc-800">
@@ -165,7 +173,7 @@ export default function App() {
       </main>
 
       <DragOverlay>
-        {activeIngredient ? (
+        {activeIngredient && !activeIsSortable ? (
           <div className="relative px-6 py-4 rounded-xl border border-orange-500 bg-zinc-800 backdrop-blur-md shadow-2xl text-lg font-bold ring-4 ring-orange-500 rotate-3 z-[9999] opacity-95 scale-110 pointer-events-none whitespace-nowrap text-white">
             {activeIngredient.name}
           </div>
