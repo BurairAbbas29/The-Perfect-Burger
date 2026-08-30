@@ -148,18 +148,35 @@ export default function App() {
     setIsSharing(true);
     try {
       const stackElement = document.getElementById('capture-burger');
-      if (!stackElement) return;
+      const burgerWrapper = document.getElementById('burger-3d-wrapper');
+      
+      // html2canvas severely breaks if raw CSS 3D perspectives are left on. 
+      // We temporarily flatten the image, remove all rotateX/Y, add a capture title block, then snap it to get a gorgeous 2D HD promo render.
+      const originalTransform = burgerWrapper.style.transform;
+      burgerWrapper.style.transform = 'scale(1.2) translateY(-20px)';
+      
+      // Inject a cool title directly into the DOM node before capturing so the screenshot has sick branding
+      const titleElement = document.createElement('div');
+      titleElement.innerHTML = '<h1 style="font-family: \'Cabinet Grotesk\', sans-serif; font-weight: 900; font-size: 2.5rem; text-align: center; color: white; margin-bottom: 2rem; letter-spacing: -2px;">MY PERFECT BURGER</h1>';
+      titleElement.style.position = 'absolute';
+      titleElement.style.top = '10%';
+      titleElement.style.width = '100%';
+      stackElement.appendChild(titleElement);
 
-      // Force GSAP transforms to snapshot correctly
       const canvas = await html2canvas(stackElement, {
         backgroundColor: '#09090b',
-        scale: 2,
+        scale: 3, // Premium high-def
         useCORS: true,
+        logging: false,
       });
+
+      // Clean up capture-only DOM elements & restore GSAP perspective
+      stackElement.removeChild(titleElement);
+      burgerWrapper.style.transform = originalTransform;
 
       const dataUrl = canvas.toDataURL('image/png');
       const blob = await (await fetch(dataUrl)).blob();
-      const file = new File([blob], 'my-perfect-burger.png', { type: 'image/png' });
+      const file = new File([blob], 'perfect-burger.png', { type: 'image/png' });
       
       const shareData = {
         title: 'Perfect Burger Builder',
@@ -171,14 +188,13 @@ export default function App() {
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share(shareData);
       } else {
-        // Fallback for desktop: Trigger download and copy link
         const a = document.createElement('a');
         a.href = dataUrl;
-        a.download = 'my-perfect-burger.png';
+        a.download = 'perfect-burger.png';
         a.click();
         
         await navigator.clipboard.writeText(window.location.href);
-        alert('Burger screenshot downloaded & Site link copied to clipboard!');
+        alert('Gorgeous HD Burger screenshot downloaded! Site link copied to clipboard!');
       }
     } catch (e) {
       console.error("Screenshot failed:", e);
