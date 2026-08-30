@@ -1,16 +1,7 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
-import { 
-  DndContext, 
-  useDraggable, 
-  useDroppable, 
-  DragOverlay, 
-  closestCenter,
-  PointerSensor,
-  useSensor,
-  useSensors
-} from '@dnd-kit/core';
+import { useDraggable, useDroppable } from '@dnd-kit/core';
 
 function DraggableIngredient({ ingredient }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
@@ -36,17 +27,6 @@ export default function BurgerStage({ stage, index }) {
   const stageRef = useRef();
   const [completed, setCompleted] = useState(false);
   const [errorObj, setErrorObj] = useState(null);
-  const [activeId, setActiveId] = useState(null);
-
-  const activeIngredient = activeId ? stage.options.find(opt => opt.id === activeId) : null;
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 8, // Requires an 8px movement before drag is locked in, filtering out clicks on scrollable pages
-      },
-    })
-  );
 
   const { isOver, setNodeRef: setDroppableRef } = useDroppable({
     id: `drop-${stage.id}`,
@@ -66,24 +46,29 @@ export default function BurgerStage({ stage, index }) {
       .from('.ingredient-opt-' + index, { opacity: 0, y: 30, stagger: 0.1, duration: 0.5, ease: 'back.out(1.5)' }, '-=0.4');
   }, { scope: stageRef });
 
-  const handleDragStart = (event) => {
-    setActiveId(event.active.id);
-  };
-
-  const handleDragEnd = (event) => {
-    const { over, active } = event;
-    setActiveId(null);
-    if (over && over.id === `drop-${stage.id}`) {
-      if (active.data.current.type === 'correct') {
-        setCompleted(true);
-        setErrorObj(null);
-        window.dispatchEvent(new CustomEvent('ingredient-placed', { detail: stage.id }));
-      } else {
-        setErrorObj(active.id);
-        setTimeout(() => setErrorObj(null), 1000);
+  useEffect(() => {
+    const handleGlobalDrop = (e) => {
+      const { dropzoneId, ingredientData, ingredientId } = e.detail;
+      
+      // Ensure the dropped location belongs to this stage
+      if (dropzoneId === `drop-${stage.id}`) {
+        // Ensure the dragged ingredient belongs to this stage
+        if (ingredientData.stageId === stage.id && ingredientData.type === 'correct') {
+          setCompleted(true);
+          setErrorObj(null);
+          // Play central success event for BurgerStack
+          window.dispatchEvent(new CustomEvent('ingredient-placed', { detail: stage.id }));
+        } else {
+          // Wrong choice or wrong stage item
+          setErrorObj(ingredientId);
+          setTimeout(() => setErrorObj(null), 1000);
+        }
       }
-    }
-  };
+    };
+
+    window.addEventListener('global-ingredient-dropped', handleGlobalDrop);
+    return () => window.removeEventListener('global-ingredient-dropped', handleGlobalDrop);
+  }, [stage.id]);
 
   return (
     <section id={`stage-${index}`} ref={stageRef} className="relative w-full min-h-screen py-32 md:py-48 flex items-center justify-start border-b border-zinc-900 border-dashed px-4 md:px-16 overflow-hidden">
@@ -92,43 +77,33 @@ export default function BurgerStage({ stage, index }) {
           {index + 1}. {stage.title}
         </h2>
 
-        <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
-          {!completed ? (
-            <div className={`mt-12 flex flex-wrap gap-4 ingredient-opt-${index}`}>
-              {stage.options.map((opt) => (
-                <DraggableIngredient key={opt.id} ingredient={opt} />
-              ))}
-            </div>
-          ) : (
-            <div className="mt-12 bg-orange-900/10 border border-orange-500/30 p-8 rounded-2xl backdrop-blur-md">
-              <h3 className="font-heading font-bold text-3xl text-orange-400 mb-4">Perfect Choice.</h3>
-              <p className="text-zinc-300 text-xl leading-relaxed">{stage.explanation}</p>
-              <div className="mt-8 text-sm text-zinc-500 uppercase tracking-widest font-bold animate-pulse">Scroll down to continue ↓</div>
-            </div>
-          )}
+        {!completed ? (
+          <div className={`mt-12 flex flex-wrap gap-4 ingredient-opt-${index}`}>
+            {stage.options.map((opt) => (
+              <DraggableIngredient key={opt.id} ingredient={opt} />
+            ))}
+          </div>
+        ) : (
+          <div className="mt-12 bg-orange-900/10 border border-orange-500/30 p-8 rounded-2xl backdrop-blur-md">
+            <h3 className="font-heading font-bold text-3xl text-orange-400 mb-4">Perfect Choice.</h3>
+            <p className="text-zinc-300 text-xl leading-relaxed">{stage.explanation}</p>
+            <div className="mt-8 text-sm text-zinc-500 uppercase tracking-widest font-bold animate-pulse">Scroll down to continue ↓</div>
+          </div>
+        )}
 
-          {!completed && (
-            <div
-              ref={setDroppableRef}
-              className={`mt-12 w-full max-w-lg h-48 rounded-3xl border-4 border-dashed flex items-center justify-center transition-all duration-300
-                ${isOver ? 'border-orange-500 bg-orange-500/10 scale-105' : 'border-zinc-700 bg-zinc-900/50'}
-                ${errorObj ? 'animate-bounce border-red-600 bg-red-900/10' : ''}
-              `}
-            >
-              <span className="font-heading text-2xl text-zinc-600 font-black uppercase tracking-widest pointer-events-none text-center px-4">
-                {isOver ? 'Drop It!' : 'Drag the perfect ingredient here'}
-              </span>
-            </div>
-          )}
-
-          <DragOverlay>
-            {activeIngredient ? (
-              <div className="relative px-6 py-4 rounded-xl border border-orange-500 bg-zinc-800 backdrop-blur-md shadow-2xl text-lg font-bold ring-4 ring-orange-500 rotate-3 z-[9999] opacity-95 scale-110 pointer-events-none whitespace-nowrap">
-                {activeIngredient.name}
-              </div>
-            ) : null}
-          </DragOverlay>
-        </DndContext>
+        {!completed && (
+          <div
+            ref={setDroppableRef}
+            className={`mt-12 w-full max-w-lg h-48 rounded-3xl border-4 border-dashed flex items-center justify-center transition-all duration-300
+              ${isOver ? 'border-orange-500 bg-orange-500/10 scale-105' : 'border-zinc-700 bg-zinc-900/50'}
+              ${errorObj ? 'animate-bounce border-red-600 bg-red-900/10' : ''}
+            `}
+          >
+            <span className={`font-heading text-2xl font-black uppercase tracking-widest pointer-events-none text-center px-4 transition-colors ${isOver ? 'text-orange-400' : 'text-zinc-500'}`}>
+              {isOver ? 'Drop It!' : 'Drag the perfect ingredient here'}
+            </span>
+          </div>
+        )}
       </div>
     </section>
   );
