@@ -47,16 +47,20 @@ const STAGES = [
 export default function App() {
   const container = useRef();
 
+  const scrollToStart = () => {
+    document.getElementById('stage-0')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <main className="w-full min-h-screen bg-zinc-950 text-white font-sans overflow-x-hidden" ref={container}>
-      <nav className="fixed top-0 w-full z-50 p-6 flex justify-between items-center mix-blend-difference">
+      <nav className="fixed top-0 w-full z-50 p-6 flex justify-between items-center mix-blend-difference pointer-events-none">
         <div className="font-heading font-bold text-xl tracking-tighter">PERFECT.BURGER</div>
-        <button className="px-5 py-2.5 bg-white text-black rounded-full font-medium text-sm hover:scale-105 transition-transform duration-300">
+        <button onClick={scrollToStart} className="pointer-events-auto px-5 py-2.5 bg-white text-black rounded-full font-medium text-sm hover:scale-105 transition-transform duration-300">
           Build Yours
         </button>
       </nav>
 
-      <Hero />
+      <Hero onBuildClick={scrollToStart} />
 
       <div className="relative z-10 w-full">
         {STAGES.map((stage, index) => (
